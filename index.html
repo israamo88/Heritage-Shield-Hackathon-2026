@@ -1,244 +1,194 @@
-
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة درع التراث الذكية // Heritage Shield Command Center</title>
+    <title>Heritage Shield // NASA-Grade Orbital Command Center</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-        :root {
-            --primary: #00f0ff;
-            --bg-dark: #030712;
-            --panel-bg: rgba(15, 23, 42, 0.75);
-            --border-glow: rgba(0, 240, 255, 0.3);
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --accent: #f59e0b;
-        }
+        body { font-family: 'Inter', sans-serif; background: #020617; color: #f8fafc; margin: 0; padding: 15px; }
+        .nasa-deck { max-width: 1200px; margin: 0 auto; background: #020617; color: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #00f0ff; box-shadow: 0 0 30px rgba(0,240,255,0.25); }
+        .deck-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #00f0ff; padding-bottom: 10px; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+        .deck-title { font-family: 'Orbitron', sans-serif; color: #00f0ff; font-size: 18px; margin: 0; }
+        .badge-live { color: #22c55e; background: rgba(34,197,94,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold; font-family: 'Orbitron'; font-size: 11px; }
+        
+        .selector-box { margin-bottom: 15px; background: rgba(15, 23, 42, 0.95); padding: 10px 15px; border-radius: 8px; border: 1px solid rgba(0,240,255,0.3); display: flex; align-items: center; gap: 15px; }
+        .selector-box label { font-family: 'Orbitron'; color: #00f0ff; font-size: 12px; }
+        .selector-box select { background: #020617; color: #38bdf8; border: 1px solid #00f0ff; padding: 6px 12px; border-radius: 6px; font-family: 'Orbitron'; font-size: 12px; cursor: pointer; outline: none; }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        #map { height: 350px; border-radius: 8px; border: 1px solid #00f0ff; margin-bottom: 15px; }
 
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            font-family: 'Tahoma', sans-serif;
-            min-height: 100vh;
-            padding: 20px;
-            overflow-x: hidden;
-            background-image:
-                radial-gradient(circle at 10% 20%, rgba(0, 240, 255, 0.05) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(245, 158, 11, 0.05) 0%, transparent 40%);
-        }
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 15px; }
+        .metric-card { background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(0,240,255,0.3); border-radius: 8px; padding: 12px; text-align: center; }
+        .metric-val { font-family: 'Orbitron', sans-serif; color: #38bdf8; font-size: 14px; margin-top: 5px; font-weight: bold; }
+        .metric-lbl { font-size: 11px; color: #94a3b8; text-transform: uppercase; font-family: 'Orbitron'; }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+        .bottom-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 15px; margin-bottom: 20px; }
+        @media (max-width: 768px) { .bottom-grid { grid-template-columns: 1fr; } }
+        .sub-panel { background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(0,240,255,0.3); border-radius: 8px; padding: 15px; font-size: 13px; line-height: 1.5; }
+        .sub-panel h5 { font-family: 'Orbitron', sans-serif; color: #00f0ff; margin: 0 0 8px 0; font-size: 13px; border-bottom: 1px solid rgba(0,240,255,0.2); padding-bottom: 5px; }
+        
+        .btn-speech { background: #00f0ff; color: #000; border: none; padding: 8px 12px; font-family: 'Orbitron'; font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 11px; width: 100%; margin-top: 8px; transition: 0.3s; }
+        .btn-speech:hover { background: #38bdf8; color: #fff; box-shadow: 0 0 10px #00f0ff; }
 
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid var(--border-glow);
-            padding-bottom: 15px;
-            margin-bottom: 25px;
-        }
-
-        .logo-area h1 {
-            font-size: 1.8rem;
-            color: var(--primary);
-            text-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .status-badge {
-            background: rgba(16, 185, 129, 0.15);
-            border: 1px solid #10b981;
-            color: #34d399;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .pulse {
-            width: 8px;
-            height: 8px;
-            background-color: #10b981;
-            border-radius: 50%;
-            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        @media (max-width: 768px) {
-            .grid { grid-template-columns: 1fr; }
-        }
-
-        .panel {
-            background: var(--panel-bg);
-            border: 1px solid var(--border-glow);
-            border-radius: 12px;
-            padding: 20px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-        }
-
-        .panel h3 {
-            color: var(--primary);
-            margin-bottom: 15px;
-            font-size: 1.2rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding-bottom: 8px;
-        }
-
-        .site-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 10px;
-            transition: 0.3s;
-            cursor: pointer;
-        }
-
-        .site-card:hover {
-            border-color: var(--primary);
-            background: rgba(0, 240, 255, 0.05);
-        }
-
-        .site-title {
-            font-weight: bold;
-            color: var(--text-main);
-            margin-bottom: 4px;
-        }
-
-        .site-desc {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .metric-box {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 8px;
-            padding: 10px;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .metric-value {
-            font-size: 1.3rem;
-            font-weight: bold;
-            color: var(--accent);
-        }
-
-        .metric-label {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-top: 4px;
-        }
-
-        .full-width {
-            grid-column: span 2;
-        }
-        @media (max-width: 768px) {
-            .full-width { grid-column: span 1; }
-        }
+        .nasa-table { width: 100%; border-collapse: collapse; font-family: 'Inter', sans-serif; font-size: 12px; background: #020617; color: #f8fafc; margin-top: 8px; border-radius: 8px; overflow: hidden; border: 1px solid rgba(0,240,255,0.3); }
+        .nasa-table th { background: #0f172a; color: #00f0ff; font-family: 'Orbitron', sans-serif; padding: 10px; text-align: left; border-bottom: 2px solid #00f0ff; font-size: 12px; }
+        .nasa-table td { padding: 9px 10px; border-bottom: 1px solid rgba(255,255,255,0.06); text-align: left; }
+        .nasa-table tr:hover { background: rgba(0,240,255,0.06); }
+        .section-title { font-family: 'Orbitron', sans-serif; color: #00f0ff; margin-top: 25px; margin-bottom: 10px; font-size: 14px; border-left: 3px solid #00f0ff; padding-left: 8px; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <header>
-            <div class="logo-area">
-                <h1>🛡️ منصة درع التراث الذكية</h1>
-            </div>
-            <div class="status-badge">
-                <div class="pulse"></div>
-                النظام يعمل بكفاءة عالية
-            </div>
-        </header>
-
-        <div class="grid">
-            <!-- لوحة المواقع الأثرية -->
-            <div class="panel">
-                <h3>📍 المواقع الأثرية المستهدفة بالحماية</h3>
-
-                <div class="site-card">
-                    <div class="site-title">واحة العين (أبوظبي)</div>
-                    <div class="site-desc">موقع تراث عالمي يضم أنظمة الري التقليدية (الفلاج) والأشجار المعمرة.</div>
-                </div>
-
-                <div class="site-card">
-                    <div class="site-title">منطقة الفهيدي التاريخية (دبي)</div>
-                    <div class="site-desc">حي تاريخي يتميز بالعمارة التقليدية وأبراج الهواء (البراجيل).</div>
-                </div>
-
-                <div class="site-card">
-                    <div class="site-title">قصر الحصن (أبوظبي)</div>
-                    <div class="site-desc">أعرق مبنى تاريخي في إمارة أبوظبي ويمثل رمزاً لتاريخها ونشأتها.</div>
-                </div>
-            </div>
-
-            <!-- لوحة المؤشرات الذكية -->
-            <div class="panel">
-                <h3>📊 مؤشرات المراقبة والذكاء الاصطناعي</h3>
-                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px;">
-                    تقييم حي لحالة المواقع الأثرية ومستوى التدخل الاستباقي للرصد البيئي والأمني.
-                </p>
-
-                <div class="metrics-grid">
-                    <div class="metric-box">
-                        <div class="metric-value">99.4%</div>
-                        <div class="metric-label">كفاءة الرصد</div>
-                    </div>
-                    <div class="metric-box">
-                        <div class="metric-value">0</div>
-                        <div class="metric-label">إنذارات طارئة</div>
-                    </div>
-                    <div class="metric-box">
-                        <div class="metric-value">24/7</div>
-                        <div class="metric-label">حماية متواصلة</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- لوحة التنبيهات والتحكم -->
-            <div class="panel full-width">
-                <h3>⚡ حالة غرفة العمليات والتحكم المركزي</h3>
-                <p style="color: var(--text-muted); font-size: 0.9rem;">
-                    تم ربط شبكة الحساسات الذكية ونظام الاستشعار عن بعد بنجاح لخدمة حماية التراث الوطني الإماراتي وإبرازه عالمياً.
-                </p>
-            </div>
+<div class="nasa-deck">
+    <div class="deck-header">
+        <div>
+            <h3 class="deck-title">🛡️ HERITAGE SHIELD // NASA-GRADE ORBITAL COMMAND CENTER</h3>
+            <p style="color:#94a3b8; font-size:11px; margin:4px 0 0 0;">AI-Powered Satellite Telemetry & Cultural Heritage Risk Monitoring Platform (UAE Nation-wide)</p>
+        </div>
+        <div>
+            <span class="badge-live">LIVE SYNC</span>
+            <span id="utc-time" style="color:#94a3b8; font-size:11px; font-family:monospace; margin-left:8px;"></span>
         </div>
     </div>
+
+    <div class="selector-box">
+        <label for="siteSelect">🎯 Select Target Site:</label>
+        <select id="siteSelect" onchange="updateSiteData()">
+            <option value="alain">🌴 Al Ain Oasis</option>
+            <option value="fahidi">🏛️ Al Fahidi Historical District</option>
+            <option value="qasr">🏰 Qasr Al Hosn</option>
+        </select>
+    </div>
+
+    <div id="map"></div>
+
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <div class="metric-lbl">Sensor Stream</div>
+            <div id="m-sensor" class="metric-val" style="font-size:12px;">Sentinel-2 MSI</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-lbl">NDVI Index</div>
+            <div id="m-ndvi" class="metric-val">0.68 (Healthy Canopy)</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-lbl">Thermal / Moisture</div>
+            <div id="m-moisture" class="metric-val">28.4% (Sub-surface)</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-lbl">CHHI Score</div>
+            <div id="m-chhi" class="metric-val" style="color:#22c55e;">82.4 / 100</div>
+        </div>
+    </div>
+
+    <div class="bottom-grid">
+        <div class="sub-panel">
+            <h5>📊 Advanced Environmental Telemetry & Risk</h5>
+            <p style="margin:4px 0;"><b>Coordinates:</b> <span id="p-coords">24.2173° N, 55.7606° E</span> | <b>Area:</b> <span id="p-area">1,200 Hectares</span></p>
+            <p style="margin:4px 0;"><b>Primary Threat:</b> <span id="p-threat" style="color:#f59e0b;">Sub-surface salinity & aquifer depletion</span></p>
+            <p style="margin:4px 0;"><b>AI Recommendation:</b> <span id="p-rec" style="color:#38bdf8;">Maintain precision drip-irrigation schedules; telemetry nominal.</span></p>
+        </div>
+
+        <div class="sub-panel">
+            <h5>🇦🇪 AI Commander // Rashed (NASA Voice)</h5>
+            <div style="font-size:11px; color:#cbd5e1; margin-bottom:5px;">Professional telemetry briefing (Controlled Speed).</div>
+            <button class="btn-speech" onclick="playBriefing()">🎙️ Play Professional Briefing</button>
+        </div>
+    </div>
+
+    <div class="section-title">🏛️ TARGET UAE HERITAGE SITES (NATIONWIDE)</div>
+    <table class="nasa-table">
+        <thead>
+            <tr>
+                <th>Heritage Site</th>
+                <th>Emirate</th>
+                <th>Risk Factor</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>Al Ain Oasis</td><td>Abu Dhabi</td><td>1.2% (Irrigation)</td><td><span style="color:#22c55e; font-weight:bold;">STABLE</span></td></tr>
+            <tr><td>Al Fahidi District</td><td>Dubai</td><td>4.5% (Humidity)</td><td><span style="color:#f59e0b; font-weight:bold;">MONITORING</span></td></tr>
+            <tr><td>Qasr Al Hosn</td><td>Abu Dhabi</td><td>0.8% (Structural)</td><td><span style="color:#38bdf8; font-weight:bold;">SECURE</span></td></tr>
+        </tbody>
+    </table>
+
+    <div class="section-title">💰 ECONOMIC & FINANCIAL FEASIBILITY</div>
+    <table class="nasa-table">
+        <thead>
+            <tr>
+                <th>Financial Metric</th>
+                <th>Projected Value</th>
+                <th>Impact</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>Maintenance Cost Reduction</td><td>-30% Annually</td><td>High Savings</td></tr>
+            <tr><td>Startup Recurring Revenue</td><td>12M AED / Year</td><td>B2G Scalable</td></tr>
+            <tr><td>Asset Valuation ROI</td><td>3.8x Return</td><td>Profitable</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    // Update UTC Time
+    function updateTime() {
+        const now = new Date();
+        document.getElementById('utc-time').innerText = now.toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
+    }
+    updateTime();
+    setInterval(updateTime, 1000);
+
+    // Initialize Map
+    const map = L.map('map').setView([24.2173, 55.7606], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap | NASA/ESA Telemetry Layer'
+    }).addTo(map);
+
+    const sites = {
+        alain: { name: "Al Ain Oasis", lat: 24.2173, lon: 55.7606, zoom: 15, sensor: "Sentinel-2 MSI (Optical)", ndvi: "0.68 (Healthy Canopy)", moisture: "28.4% (Irrigation)", chhi: "82.4 / 100", coords: "24.2173° N, 55.7606° E", area: "1,200 Hectares", threat: "Sub-surface salinity & aquifer depletion", rec: "Maintain precision drip-irrigation schedules; telemetry nominal." },
+        fahidi: { name: "Al Fahidi Historical District", lat: 25.2634, lon: 55.3003, zoom: 16, sensor: "Landsat-9 TIRS & SAR", ndvi: "0.12 (Urban Built-up)", moisture: "65.2% (Coastal Humidity)", chhi: "71.8 / 100", coords: "25.2634° N, 55.3003° E", area: "25 Hectares", threat: "Rising capillary moisture & marine aerosol", rec: "Deploy nano-silicate breathable sealants on coral-stone masonry." },
+        qasr: { name: "Qasr Al Hosn", lat: 24.4822, lon: 54.3549, zoom: 16, sensor: "Sentinel-1 InSAR (Radar)", ndvi: "0.22 (Urban Greenspace)", moisture: "42.0% (Controlled)", chhi: "88.5 / 100", coords: "24.4822° N, 54.3549° E", area: "45 Hectares", threat: "Foundation vibration from surrounding urban transit", rec: "Continue continuous InSAR phase-shift monitoring; zero structural drift." }
+    };
+
+    let marker = L.marker([24.2173, 55.7606]).addTo(map).bindPopup("<b>Al Ain Oasis</b><br>CHHI: 82.4 / 100").openPopup();
+    let circle = L.circle([24.2173, 55.7606], { radius: 350, color: '#00f0ff', fillColor: '#00f0ff', fillOpacity: 0.25 }).addTo(map);
+
+    function updateSiteData() {
+        const val = document.getElementById('siteSelect').value;
+        const d = sites[val];
+        
+        document.getElementById('m-sensor').innerText = d.sensor;
+        document.getElementById('m-ndvi').innerText = d.ndvi;
+        document.getElementById('m-moisture').innerText = d.moisture;
+        document.getElementById('m-chhi').innerText = d.chhi;
+        document.getElementById('p-coords').innerText = d.coords;
+        document.getElementById('p-area').innerText = d.area;
+        document.getElementById('p-threat').innerText = d.threat;
+        document.getElementById('p-rec').innerText = d.rec;
+
+        map.setView([d.lat, d.lon], d.zoom);
+        marker.setLatLng([d.lat, d.lon]).bindPopup(`<b>${d.name}</b><br>CHHI: ${d.chhi}`).openPopup();
+        circle.setLatLng([d.lat, d.lon]);
+    }
+
+    function playBriefing() {
+        const select = document.getElementById('siteSelect');
+        const siteName = select.options[select.selectedIndex].text;
+        const val = select.value;
+        const chhiVal = sites[val].chhi;
+        
+        const text = `Attention Jury. Now streaming live telemetry for ${siteName}. Current cultural heritage health index is ${chhiVal}, operating under nominal orbital parameters.`;
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = 'en-US';
+        utter.rate = 0.85;
+        window.speechSynthesis.speak(utter);
+    }
+</script>
 
 </body>
 </html>
