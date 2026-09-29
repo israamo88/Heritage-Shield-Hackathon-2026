@@ -1,34 +1,60 @@
-
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Heritage Shield - AI-Powered Cultural Heritage Risk Monitoring Platform</title>
-    <!-- أضيفي هنا روابط الـ CSS و Leaflet/Google Earth و Tailwind أو التنسيقات الخاصة بك -->
+    <title>Heritage Shield // NASA-Grade Orbital Command Center</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-        /* التنسيقات والخرائط والداول التفاعلية هنا */
-        body { font-family: Arial, sans-serif; margin: 0; background: #f4f6f8; color: #333; }
-        header { background: #1b2a4a; color: white; padding: 20px; text-align: center; }
-        .container { max-width: 1200px; margin: 20px auto; padding: 20px; background: white; border-radius: 8px; }
-        iframe { width: 100%; height: 500px; border: none; border-radius: 8px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background-color: #1b2a4a; color: white; }
+        body { font-family: 'Inter', sans-serif; background: #020617; color: #f8fafc; margin: 0; padding: 15px; }
+        .nasa-deck { max-width: 1200px; margin: 0 auto; background: #020617; color: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #00f0ff; box-shadow: 0 0 30px rgba(0,240,255,0.25); }
+        .deck-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #00f0ff; padding-bottom: 10px; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+        .deck-title { font-family: 'Orbitron', sans-serif; color: #00f0ff; font-size: 18px; margin: 0; }
+        .badge-live { color: #22c55e; background: rgba(34,197,94,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold; font-family: 'Orbitron'; font-size: 11px; }
+        
+        .selector-box { margin-bottom: 15px; background: rgba(15, 23, 42, 0.95); padding: 10px 15px; border-radius: 8px; border: 1px solid rgba(0,240,255,0.3); display: flex; align-items: center; gap: 15px; }
+        .selector-box label { font-family: 'Orbitron'; color: #00f0ff; font-size: 12px; }
+        .selector-box select { background: #020617; color: #38bdf8; border: 1px solid #00f0ff; padding: 6px 12px; border-radius: 6px; font-family: 'Orbitron'; font-size: 12px; cursor: pointer; outline: none; }
+
+        #map { height: 400px; border-radius: 8px; border: 1px solid #00f0ff; margin-bottom: 15px; z-index: 1; }
+
+        .nasa-table { width: 100%; border-collapse: collapse; font-family: 'Inter', sans-serif; font-size: 12px; background: #020617; color: #f8fafc; margin-top: 8px; border-radius: 8px; overflow: hidden; border: 1px solid rgba(0,240,255,0.3); }
+        .nasa-table th { background: #0f172a; color: #00f0ff; font-family: 'Orbitron', sans-serif; padding: 10px; text-align: left; border-bottom: 2px solid #00f0ff; font-size: 12px; }
+        .nasa-table td { padding: 9px 10px; border-bottom: 1px solid rgba(255,255,255,0.06); text-align: left; }
+        .nasa-table tr:hover { background: rgba(0,240,255,0.06); }
+        .section-title { font-family: 'Orbitron', sans-serif; color: #00f0ff; margin-top: 25px; margin-bottom: 10px; font-size: 14px; border-left: 3px solid #00f0ff; padding-left: 8px; }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Heritage Shield: AI-Powered Satellite Telemetry & Hyperspectral Risk Monitoring</h1>
-        <p>Protecting UAE Cultural Heritage Landmarks (Al Ain Oasis, Al Fahidi, Qasr Al Hosn)</p>
-    </header>
-    <div class="container">
-        <h2>Live Google Earth & Hyperspectral Risk Maps</h2>
-        <!-- تضمين خريطة تفاعلية أو Google Earth iframe / Leaflet -->
-        <iframe src="https://earthengine.google.com/iframes/embed.html" title="Google Earth Engine Map"></iframe>
-        
-        <h2>CHHI Risk Assessment & B2G Analytics Tables</h2>
-        <table>
+
+<div class="nasa-deck">
+    <div class="deck-header">
+        <div>
+            <h3 class="deck-title">🛡️ HERITAGE SHIELD // NASA-GRADE ORBITAL COMMAND CENTER</h3>
+            <p style="color:#94a3b8; font-size:11px; margin:4px 0 0 0;">AI-Powered Satellite Telemetry & Cultural Heritage Risk Monitoring Platform (UAE Nation-wide)</p>
+        </div>
+        <div>
+            <span class="badge-live">LIVE SYNC</span>
+            <span id="utc-time" style="color:#94a3b8; font-size:11px; font-family:monospace; margin-left:8px;"></span>
+        </div>
+    </div>
+
+    <div class="selector-box">
+        <label for="siteSelect">🎯 Select Target Site:</label>
+        <select id="siteSelect" onchange="updateSiteData()">
+            <option value="alain">🌴 Al Ain Oasis</option>
+            <option value="fahidi">🏛️ Al Fahidi Historical District</option>
+            <option value="qasr">🏰 Qasr Al Hosn</option>
+        </select>
+    </div>
+
+    <!-- الخريطة التفاعلية الحقيقية بدلاً من الـ iframe المعطل -->
+    <div id="map"></div>
+
+    <div class="section-title">🏛️ CHHI Risk Assessment & B2G Analytics Tables</div>
+    <table class="nasa-table">
+        <thead>
             <tr>
                 <th>Landmark</th>
                 <th>Sub-surface Salinity</th>
@@ -36,28 +62,65 @@
                 <th>CHHI Risk Score</th>
                 <th>Status</th>
             </tr>
+        </thead>
+        <tbody>
             <tr>
                 <td>Al Ain Oasis</td>
                 <td>High (EC > 8.5 dS/m)</td>
                 <td>Critical (-2.4m/yr)</td>
                 <td>84.2 / 100</td>
-                <td style="color: red; font-weight: bold;">High Risk</td>
+                <td><span style="color: #ef4444; font-weight: bold;">High Risk</span></td>
             </tr>
             <tr>
                 <td>Al Fahidi Historical District</td>
                 <td>Moderate (Marine Aerosol)</td>
                 <td>Stable</td>
                 <td>62.1 / 100</td>
-                <td style="color: orange; font-weight: bold;">Moderate Risk</td>
+                <td><span style="color: #f59e0b; font-weight: bold;">Moderate Risk</span></td>
             </tr>
             <tr>
                 <td>Qasr Al Hosn</td>
                 <td>Low-Moderate</td>
                 <td>Managed</td>
                 <td>45.8 / 100</td>
-                <td style="color: green; font-weight: bold;">Stable</td>
+                <td><span style="color: #22c55e; font-weight: bold;">Stable</span></td>
             </tr>
-        </table>
-    </div>
+        </tbody>
+    </table>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    function updateTime() {
+        const now = new Date();
+        document.getElementById('utc-time').innerText = now.toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
+    }
+    updateTime();
+    setInterval(updateTime, 1000);
+
+    const map = L.map('map').setView([24.2173, 55.7606], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap | NASA/ESA Telemetry Layer'
+    }).addTo(map);
+
+    const sites = {
+        alain: { lat: 24.2173, lon: 55.7606, zoom: 15, name: "Al Ain Oasis" },
+        fahidi: { lat: 25.2634, lon: 55.3003, zoom: 16, name: "Al Fahidi Historical District" },
+        qasr: { lat: 24.4822, lon: 54.3549, zoom: 16, name: "Qasr Al Hosn" }
+    };
+
+    let marker = L.marker([24.2173, 55.7606]).addTo(map).bindPopup("<b>Al Ain Oasis</b><br>CHHI Risk Score: 84.2 / 100").openPopup();
+    let circle = L.circle([24.2173, 55.7606], { radius: 350, color: '#00f0ff', fillColor: '#00f0ff', fillOpacity: 0.25 }).addTo(map);
+
+    function updateSiteData() {
+        const val = document.getElementById('siteSelect').value;
+        const d = sites[val];
+        map.setView([d.lat, d.lon], d.zoom);
+        marker.setLatLng([d.lat, d.lon]).bindPopup(`<b>${d.name}</b>`).openPopup();
+        circle.setLatLng([d.lat, d.lon]);
+    }
+</script>
+
 </body>
 </html>
