@@ -1,0 +1,63 @@
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heritage Shield - AI-Powered Cultural Heritage Risk Monitoring Platform</title>
+    <!-- أضيفي هنا روابط الـ CSS و Leaflet/Google Earth و Tailwind أو التنسيقات الخاصة بك -->
+    <style>
+        /* التنسيقات والخرائط والداول التفاعلية هنا */
+        body { font-family: Arial, sans-serif; margin: 0; background: #f4f6f8; color: #333; }
+        header { background: #1b2a4a; color: white; padding: 20px; text-align: center; }
+        .container { max-width: 1200px; margin: 20px auto; padding: 20px; background: white; border-radius: 8px; }
+        iframe { width: 100%; height: 500px; border: none; border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #1b2a4a; color: white; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Heritage Shield: AI-Powered Satellite Telemetry & Hyperspectral Risk Monitoring</h1>
+        <p>Protecting UAE Cultural Heritage Landmarks (Al Ain Oasis, Al Fahidi, Qasr Al Hosn)</p>
+    </header>
+    <div class="container">
+        <h2>Live Google Earth & Hyperspectral Risk Maps</h2>
+        <!-- تضمين خريطة تفاعلية أو Google Earth iframe / Leaflet -->
+        <iframe src="https://earthengine.google.com/iframes/embed.html" title="Google Earth Engine Map"></iframe>
+        
+        <h2>CHHI Risk Assessment & B2G Analytics Tables</h2>
+        <table>
+            <tr>
+                <th>Landmark</th>
+                <th>Sub-surface Salinity</th>
+                <th>Aquifer Depletion</th>
+                <th>CHHI Risk Score</th>
+                <th>Status</th>
+            </tr>
+            <tr>
+                <td>Al Ain Oasis</td>
+                <td>High (EC > 8.5 dS/m)</td>
+                <td>Critical (-2.4m/yr)</td>
+                <td>84.2 / 100</td>
+                <td style="color: red; font-weight: bold;">High Risk</td>
+            </tr>
+            <tr>
+                <td>Al Fahidi Historical District</td>
+                <td>Moderate (Marine Aerosol)</td>
+                <td>Stable</td>
+                <td>62.1 / 100</td>
+                <td style="color: orange; font-weight: bold;">Moderate Risk</td>
+            </tr>
+            <tr>
+                <td>Qasr Al Hosn</td>
+                <td>Low-Moderate</td>
+                <td>Managed</td>
+                <td>45.8 / 100</td>
+                <td style="color: green; font-weight: bold;">Stable</td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>
