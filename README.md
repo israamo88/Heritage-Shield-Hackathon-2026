@@ -7,7 +7,7 @@
 
 ## 🚀 Live Demo
 Experience the fully interactive command center deployed live:  
-👉 **[Open Heritage Shield Live Dashboard](https://israamo8.github.io/Heritage-Shield-Hackathon-2026/)**[cite: 2]
+👉 **[Open Heritage Shield Live Dashboard](https://israamo88.github.io/Heritage-Shield-Hackathon-2026/)**[cite: 1]
 
 ---
 
