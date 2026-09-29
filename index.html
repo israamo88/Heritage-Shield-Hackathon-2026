@@ -3,122 +3,434 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Heritage Shield // NASA-Grade Orbital Command Center</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>HERITAGE SHIELD // NASA-GRADE ORBITAL COMMAND CENTER</title>
+    <!-- استدعاء الخطوط التقنية -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- استدعاء مكتبة الخرائط Leaflet -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
     <style>
-        body { font-family: 'Inter', sans-serif; background: #020617; color: #f8fafc; margin: 0; padding: 15px; }
-        .nasa-deck { max-width: 1200px; margin: 0 auto; background: #020617; color: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #00f0ff; box-shadow: 0 0 30px rgba(0,240,255,0.25); }
-        .deck-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #00f0ff; padding-bottom: 10px; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
-        .deck-title { font-family: 'Orbitron', sans-serif; color: #00f0ff; font-size: 18px; margin: 0; }
-        .badge-live { color: #22c55e; background: rgba(34,197,94,0.2); padding: 4px 8px; border-radius: 4px; font-weight: bold; font-family: 'Orbitron'; font-size: 11px; }
+        /* إعدادات المظهر الداكن الفضائي (NASA-Grade Theme) */
+        :root {
+            --bg-main: #1a1a1a;
+            --bg-panel: #222222;
+            --bg-darker: #151515;
+            --text-main: #e0e0e0;
+            --neon-cyan: #00e5ff;
+            --neon-green: #00ff66;
+            --border-color: #333333;
+        }
         
-        .selector-box { margin-bottom: 15px; background: rgba(15, 23, 42, 0.95); padding: 10px 15px; border-radius: 8px; border: 1px solid rgba(0,240,255,0.3); display: flex; align-items: center; gap: 15px; }
-        .selector-box label { font-family: 'Orbitron'; color: #00f0ff; font-size: 12px; }
-        .selector-box select { background: #020617; color: #38bdf8; border: 1px solid #00f0ff; padding: 6px 12px; border-radius: 6px; font-family: 'Orbitron'; font-size: 12px; cursor: pointer; outline: none; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg-main); 
+            color: var(--text-main); 
+            margin: 0; 
+            padding: 20px; 
+        }
+        
+        .container { 
+            max-width: 1400px; 
+            margin: 0 auto; 
+        }
 
-        #map { height: 400px; border-radius: 8px; border: 1px solid #00f0ff; margin-bottom: 15px; z-index: 1; }
+        /* ترويسة المنصة */
+        .header-title { 
+            font-family: 'Orbitron', sans-serif; 
+            color: var(--neon-cyan); 
+            font-size: 20px; 
+            font-weight: 700;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .header-subtitle { 
+            font-size: 11px; 
+            color: #888; 
+            margin-bottom: 20px; 
+        }
 
-        .nasa-table { width: 100%; border-collapse: collapse; font-family: 'Inter', sans-serif; font-size: 12px; background: #020617; color: #f8fafc; margin-top: 8px; border-radius: 8px; overflow: hidden; border: 1px solid rgba(0,240,255,0.3); }
-        .nasa-table th { background: #0f172a; color: #00f0ff; font-family: 'Orbitron', sans-serif; padding: 10px; text-align: left; border-bottom: 2px solid #00f0ff; font-size: 12px; }
-        .nasa-table td { padding: 9px 10px; border-bottom: 1px solid rgba(255,255,255,0.06); text-align: left; }
-        .nasa-table tr:hover { background: rgba(0,240,255,0.06); }
-        .section-title { font-family: 'Orbitron', sans-serif; color: #00f0ff; margin-top: 25px; margin-bottom: 10px; font-size: 14px; border-left: 3px solid #00f0ff; padding-left: 8px; }
+        /* أدوات التحكم (Dropdown) */
+        .controls { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            margin-bottom: 15px; 
+            background: var(--bg-darker);
+            padding: 10px 15px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+        }
+        .controls label { 
+            color: #fff; 
+            font-size: 13px; 
+            font-weight: 600; 
+        }
+        .controls select { 
+            background: var(--bg-panel); 
+            color: #fff; 
+            border: 1px solid var(--border-color); 
+            padding: 8px 12px; 
+            border-radius: 4px; 
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            outline: none;
+        }
+
+        /* الخريطة */
+        #map { 
+            height: 400px; 
+            width: 100%; 
+            border: 1px solid var(--border-color); 
+            border-radius: 4px; 
+            margin-bottom: 20px; 
+            z-index: 1;
+        }
+
+        /* لوحة التتبع (Telemetry Panel) */
+        .telemetry-panel {
+            background: var(--bg-darker);
+            border: 1px solid var(--neon-cyan);
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .telemetry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .telemetry-title {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-cyan);
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .live-sync {
+            color: var(--neon-green);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* شبكة بيانات التتبع */
+        .telemetry-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+        .telemetry-box {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 15px;
+            text-align: center;
+        }
+        .box-title {
+            font-size: 10px;
+            color: #888;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+        .box-value {
+            font-size: 13px;
+            color: var(--neon-cyan);
+            font-weight: 600;
+        }
+        .box-value.green-text { color: var(--neon-green); }
+
+        /* الأقسام السفلية (راشد والجداول) */
+        .section-header {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-cyan);
+            font-size: 14px;
+            margin: 30px 0 15px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* تصميم الجداول مطابق للصور */
+        .nasa-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            margin-bottom: 30px;
+            background: var(--bg-darker);
+            border: 1px solid var(--border-color);
+        }
+        .nasa-table th {
+            color: var(--neon-cyan);
+            text-align: left;
+            padding: 15px;
+            border-bottom: 2px solid var(--border-color);
+            font-weight: 600;
+        }
+        .nasa-table tr:nth-child(odd) { background-color: #2a2a2a; }
+        .nasa-table tr:nth-child(even) { background-color: #1e1e1e; }
+        .nasa-table td {
+            padding: 12px 15px;
+            color: #ddd;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* قسم الذكاء الاصطناعي راشد */
+        .ai-commander {
+            background: var(--bg-darker);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .ai-commander-title {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-cyan);
+            font-size: 13px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px;
+        }
+        .ai-chat {
+            font-size: 12px;
+            color: #bbb;
+            margin-bottom: 10px;
+            height: 60px;
+            overflow-y: auto;
+        }
+        .ai-input-row {
+            display: flex;
+            gap: 10px;
+        }
+        .ai-input-row input {
+            flex: 1;
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            color: #fff;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            outline: none;
+        }
+        .ai-input-row button {
+            background: var(--bg-panel);
+            border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 11px;
+        }
+        .ai-input-row button:hover { background: var(--neon-cyan); color: #000; }
+
     </style>
 </head>
 <body>
 
-<div class="nasa-deck">
-    <div class="deck-header">
-        <div>
-            <h3 class="deck-title">🛡️ HERITAGE SHIELD // NASA-GRADE ORBITAL COMMAND CENTER</h3>
-            <p style="color:#94a3b8; font-size:11px; margin:4px 0 0 0;">AI-Powered Satellite Telemetry & Cultural Heritage Risk Monitoring Platform (UAE Nation-wide)</p>
-        </div>
-        <div>
-            <span class="badge-live">LIVE SYNC</span>
-            <span id="utc-time" style="color:#94a3b8; font-size:11px; font-family:monospace; margin-left:8px;"></span>
-        </div>
-    </div>
+<div class="container">
+    <!-- الترويسة -->
+    <div class="header-title">🛡️ HERITAGE SHIELD // NASA-GRADE ORBITAL COMMAND CENTER</div>
+    <div class="header-subtitle">AI-Powered Satellite Telemetry & Cultural Heritage Risk Monitoring Platform (UAE Nation-wide)</div>
 
-    <div class="selector-box">
-        <label for="siteSelect">🎯 Select Target Site:</label>
-        <select id="siteSelect" onchange="updateSiteData()">
+    <!-- أداة الاختيار -->
+    <div class="controls">
+        <label>🎯 Select Target Site:</label>
+        <select id="siteSelect" onchange="updateDashboard()">
             <option value="alain">🌴 Al Ain Oasis</option>
-            <option value="fahidi">🏛️ Al Fahidi Historical District</option>
+            <option value="fahidi">🏛️ Al Fahidi District</option>
             <option value="qasr">🏰 Qasr Al Hosn</option>
         </select>
     </div>
 
-    <!-- الخريطة التفاعلية الحقيقية بدلاً من الـ iframe المعطل -->
+    <!-- الخريطة الفضائية -->
     <div id="map"></div>
 
-    <div class="section-title">🏛️ CHHI Risk Assessment & B2G Analytics Tables</div>
+    <!-- لوحة التتبع -->
+    <div class="telemetry-panel">
+        <div class="telemetry-header">
+            <div class="telemetry-title" id="telemetryTitle">🛰️ NASA/ESA ORBITAL TELEMETRY // 🌴 Al Ain Oasis</div>
+            <div class="live-sync">
+                <span>LIVE SYNC</span>
+                <span id="clock"></span>
+            </div>
+        </div>
+        <div class="telemetry-grid">
+            <div class="telemetry-box">
+                <div class="box-title">SENSOR STREAM</div>
+                <div class="box-value" id="valSensor">Sentinel-2 MSI (Optical & NIR)</div>
+            </div>
+            <div class="telemetry-box">
+                <div class="box-title">NDVI INDEX</div>
+                <div class="box-value" id="valNdvi">0.68 (Healthy Palm Canopy)</div>
+            </div>
+            <div class="telemetry-box">
+                <div class="box-title">THERMAL / MOISTURE</div>
+                <div class="box-value" id="valThermal">28.4% (Sub-surface Irrigation)</div>
+            </div>
+            <div class="telemetry-box">
+                <div class="box-title">CHHI SCORE</div>
+                <div class="box-value green-text" id="valChhi">82.4 / 100</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- قسم الذكاء الاصطناعي -->
+    <div class="ai-commander">
+        <div class="ai-commander-title">🤖 AI Commander // Rashed (NASA Voice)</div>
+        <div class="ai-chat" id="chatOutput">
+            [SYSTEM READY] Orbital telemetry linked. Awaiting query regarding heritage site status...
+        </div>
+        <div class="ai-input-row">
+            <input type="text" id="chatInput" placeholder="Enter query for AI Commander Rashed...">
+            <button onclick="sendQuery()">TRANSMIT</button>
+        </div>
+    </div>
+
+    <!-- جدول المواقع المستهدفة -->
+    <div class="section-header">🏛️ TARGET UAE HERITAGE SITES (NATIONWIDE)</div>
     <table class="nasa-table">
         <thead>
             <tr>
-                <th>Landmark</th>
-                <th>Sub-surface Salinity</th>
-                <th>Aquifer Depletion</th>
-                <th>CHHI Risk Score</th>
+                <th>Heritage Site</th>
+                <th>Emirate</th>
+                <th>Risk Factor</th>
                 <th>Status</th>
             </tr>
         </thead>
         <tbody>
             <tr>
                 <td>Al Ain Oasis</td>
-                <td>High (EC > 8.5 dS/m)</td>
-                <td>Critical (-2.4m/yr)</td>
-                <td>84.2 / 100</td>
-                <td><span style="color: #ef4444; font-weight: bold;">High Risk</span></td>
+                <td>Abu Dhabi</td>
+                <td>1.2% (Irrigation)</td>
+                <td>STABLE</td>
             </tr>
             <tr>
-                <td>Al Fahidi Historical District</td>
-                <td>Moderate (Marine Aerosol)</td>
-                <td>Stable</td>
-                <td>62.1 / 100</td>
-                <td><span style="color: #f59e0b; font-weight: bold;">Moderate Risk</span></td>
+                <td>Al Fahidi District</td>
+                <td>Dubai</td>
+                <td>4.5% (Humidity)</td>
+                <td>MONITORING</td>
             </tr>
             <tr>
                 <td>Qasr Al Hosn</td>
-                <td>Low-Moderate</td>
-                <td>Managed</td>
-                <td>45.8 / 100</td>
-                <td><span style="color: #22c55e; font-weight: bold;">Stable</span></td>
+                <td>Abu Dhabi</td>
+                <td>0.8% (Structural)</td>
+                <td>SECURE</td>
             </tr>
         </tbody>
     </table>
+
+    <!-- جدول الجدوى الاقتصادية -->
+    <div class="section-header">💰 ECONOMIC & FINANCIAL FEASIBILITY</div>
+    <table class="nasa-table">
+        <thead>
+            <tr>
+                <th>Financial Metric</th>
+                <th>Projected Value</th>
+                <th>Impact</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Maintenance Cost Reduction</td>
+                <td>-30% Annually</td>
+                <td>High Savings</td>
+            </tr>
+            <tr>
+                <td>Startup Recurring Revenue</td>
+                <td>12M AED / Year</td>
+                <td>B2G Scalable</td>
+            </tr>
+            <tr>
+                <td>Asset Valuation ROI</td>
+                <td>3.8x Return</td>
+                <td>Profitable</td>
+            </tr>
+        </tbody>
+    </table>
+
 </div>
 
+<!-- استدعاء سكريبت الخريطة والتفاعلات -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-    function updateTime() {
+    // تحديث الساعة الحية
+    function updateClock() {
         const now = new Date();
-        document.getElementById('utc-time').innerText = now.toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
+        document.getElementById('clock').innerText = now.toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
     }
-    updateTime();
-    setInterval(updateTime, 1000);
+    setInterval(updateClock, 1000);
+    updateClock();
 
-    const map = L.map('map').setView([24.2173, 55.7606], 13);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '© OpenStreetMap | NASA/ESA Telemetry Layer'
+    // إعداد الخريطة باستخدام طبقة قمر صناعي لتشبه واجهة النظام
+    const map = L.map('map').setView([24.2173, 55.7606], 6); // زووم واسع مبدئياً
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
     }).addTo(map);
 
-    const sites = {
-        alain: { lat: 24.2173, lon: 55.7606, zoom: 15, name: "Al Ain Oasis" },
-        fahidi: { lat: 25.2634, lon: 55.3003, zoom: 16, name: "Al Fahidi Historical District" },
-        qasr: { lat: 24.4822, lon: 54.3549, zoom: 16, name: "Qasr Al Hosn" }
+    // بيانات المواقع
+    const siteData = {
+        alain: {
+            lat: 24.2173, lon: 55.7606, zoom: 14,
+            title: "🛰️ NASA/ESA ORBITAL TELEMETRY // 🌴 Al Ain Oasis",
+            sensor: "Sentinel-2 MSI (Optical & NIR)",
+            ndvi: "0.68 (Healthy Palm Canopy)",
+            thermal: "28.4% (Sub-surface Irrigation)",
+            chhi: "82.4 / 100"
+        },
+        fahidi: {
+            lat: 25.2634, lon: 55.3003, zoom: 16,
+            title: "🛰️ NASA/ESA ORBITAL TELEMETRY // 🏛️ Al Fahidi District",
+            sensor: "PRISMA Hyperspectral",
+            ndvi: "0.12 (Urban Structure)",
+            thermal: "42.1% (Marine Humidity Accumulation)",
+            chhi: "62.1 / 100"
+        },
+        qasr: {
+            lat: 24.4822, lon: 54.3549, zoom: 16,
+            title: "🛰️ NASA/ESA ORBITAL TELEMETRY // 🏰 Qasr Al Hosn",
+            sensor: "EnMAP & Sentinel-1 SAR",
+            ndvi: "0.08 (Stone Foundation)",
+            thermal: "18.2% (Dry/Stable)",
+            chhi: "45.8 / 100"
+        }
     };
 
-    let marker = L.marker([24.2173, 55.7606]).addTo(map).bindPopup("<b>Al Ain Oasis</b><br>CHHI Risk Score: 84.2 / 100").openPopup();
-    let circle = L.circle([24.2173, 55.7606], { radius: 350, color: '#00f0ff', fillColor: '#00f0ff', fillOpacity: 0.25 }).addTo(map);
+    let currentMarker = L.marker([24.2173, 55.7606]).addTo(map);
 
-    function updateSiteData() {
-        const val = document.getElementById('siteSelect').value;
-        const d = sites[val];
-        map.setView([d.lat, d.lon], d.zoom);
-        marker.setLatLng([d.lat, d.lon]).bindPopup(`<b>${d.name}</b>`).openPopup();
-        circle.setLatLng([d.lat, d.lon]);
+    function updateDashboard() {
+        const siteKey = document.getElementById('siteSelect').value;
+        const data = siteData[siteKey];
+        
+        // تحديث الخريطة
+        map.setView([data.lat, data.lon], data.zoom);
+        currentMarker.setLatLng([data.lat, data.lon]);
+        
+        // تحديث لوحة التتبع
+        document.getElementById('telemetryTitle').innerText = data.title;
+        document.getElementById('valSensor').innerText = data.sensor;
+        document.getElementById('valNdvi').innerText = data.ndvi;
+        document.getElementById('valThermal').innerText = data.thermal;
+        document.getElementById('valChhi').innerText = data.chhi;
+    }
+
+    // محاكاة استجابة راشد
+    function sendQuery() {
+        const input = document.getElementById('chatInput');
+        const output = document.getElementById('chatOutput');
+        if(!input.value) return;
+        
+        output.innerHTML += `<br><span style="color:var(--text-main)">> USER: ${input.value}</span>`;
+        input.value = '';
+        
+        setTimeout(() => {
+            output.innerHTML += `<br><span style="color:var(--neon-cyan)">> RASHID AI: Analyzing telemetry... Current site parameters are within acceptable limits. No immediate structural interventions required.</span>`;
+            output.scrollTop = output.scrollHeight;
+        }, 1000);
     }
 </script>
 
