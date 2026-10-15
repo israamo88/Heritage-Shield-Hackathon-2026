@@ -35,6 +35,7 @@
             font-size: 22px;
             margin: 0 0 5px 0;
             letter-spacing: 1px;
+            text-shadow: 0 0 8px rgba(0, 255, 204, 0.3);
         }
 
         .dashboard-header p {
@@ -68,6 +69,7 @@
             font-size: 14px;
             cursor: pointer;
             font-family: monospace;
+            box-shadow: 0 0 5px rgba(0, 255, 204, 0.2);
         }
 
         #map {
@@ -208,7 +210,6 @@
             color: #000;
         }
 
-        /* Tables Formatting */
         .data-table {
             width: 100%;
             border-collapse: collapse;
@@ -277,4 +278,209 @@
             </div>
             <div class="metric-card">
                 <div class="label">Thermal / Moisture</div>
-                <div class="value" id="valThermal">28.
+                <div class="value" id="valThermal">28.4% (Sub-surface Irrigation)</div>
+            </div>
+            <div class="metric-card">
+                <div class="label">CHHI Score</div>
+                <div class="value" id="valChhi" style="color:var(--neon-cyan);">82.4 / 100</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rashid AI Command Terminal -->
+    <div class="terminal-panel">
+        <div class="terminal-header">
+            <div class="terminal-title">
+                <span class="status-dot"></span>
+                🤖 AI Commander // Rashed (NASA Voice)
+            </div>
+            <span style="color: var(--text-sub); font-size: 11px;">ORBITAL LINK ACTIVE</span>
+        </div>
+        <div class="terminal-output" id="chatOutput">[SYSTEM READY] Orbital telemetry linked. Awaiting query regarding heritage site status...</div>
+        <div class="terminal-input-container">
+            <input type="text" id="chatInput" placeholder="Enter query for AI Commander Rashed..." onkeypress="handleKey(event)">
+            <button onclick="sendQuery()">TRANSMIT</button>
+        </div>
+    </div>
+
+    <!-- Target UAE Heritage Sites Table -->
+    <div class="section-panel">
+        <div class="section-title">🏛️ TARGET UAE HERITAGE SITES (NATIONWIDE)</div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Heritage Site</th>
+                    <th>Emirate</th>
+                    <th>Risk Factor</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Al Ain Oasis</td>
+                    <td>Abu Dhabi</td>
+                    <td>1.2% (Irrigation)</td>
+                    <td style="color: var(--neon-cyan);">STABLE</td>
+                </tr>
+                <tr>
+                    <td>Al Fahidi District</td>
+                    <td>Dubai</td>
+                    <td>4.5% (Humidity)</td>
+                    <td style="color: #ffaa00;">MONITORING</td>
+                </tr>
+                <tr>
+                    <td>Qasr Al Hosn</td>
+                    <td>Abu Dhabi</td>
+                    <td>0.8% (Structural)</td>
+                    <td style="color: var(--neon-cyan);">SECURE</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Economic & Financial Feasibility Table -->
+    <div class="section-panel">
+        <div class="section-title">💰 ECONOMIC & FINANCIAL FEASIBILITY</div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Financial Metric</th>
+                    <th>Projected Value</th>
+                    <th>Impact</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Maintenance Cost Reduction</td>
+                    <td>-30% Annually</td>
+                    <td>High Savings</td>
+                </tr>
+                <tr>
+                    <td>Startup Recurring Revenue</td>
+                    <td>1.2M AED / Year</td>
+                    <td>B2G Scalable</td>
+                </tr>
+                <tr>
+                    <td>Asset Valuation ROI</td>
+                    <td>3.8x Return</td>
+                    <td>Profitable</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        const sitesData = {
+            al_ain: {
+                name: "🌴 Al Ain Oasis",
+                coords: [24.2185, 55.7625],
+                sensor: "Sentinel-2 MSI (Optical & NIR)",
+                ndvi: "0.68 (Healthy Palm Canopy)",
+                thermal: "28.4% (Sub-surface Irrigation)",
+                chhi: "82.4 / 100"
+            },
+            al_fahidi: {
+                name: "🏰 Al Fahidi Historical District",
+                coords: [25.2638, 55.2972],
+                sensor: "PRISMA Hyperspectral / InSAR",
+                ndvi: "14.2% Surface Dampness",
+                thermal: "41.8°C Thermal Stress",
+                chhi: "78.0 / 100"
+            },
+            qasr_al_hosn: {
+                name: "🏛️ Qasr Al Hosn",
+                coords: [24.4822, 54.3548],
+                sensor: "DESIS Hyperspectral Stream",
+                ndvi: "0.12 Structural Shift Rate",
+                thermal: "34.1°C Baseline Temp",
+                chhi: "91.2 / 100"
+            }
+        };
+
+        let map;
+        let currentMarker;
+
+        function initMap() {
+            map = L.map('map').setView(sitesData.al_ain.coords, 16);
+
+            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: 'Tiles &copy; Esri'
+            }).addTo(map);
+
+            currentMarker = L.marker(sitesData.al_ain.coords).addTo(map)
+                .bindPopup("<b>Al Ain Oasis</b><br>Heritage Telemetry Active").openPopup();
+
+            setTimeout(() => {
+                map.invalidateSize();
+            }, 400);
+        }
+
+        window.onload = function() {
+            initMap();
+        };
+
+        function changeSite() {
+            const selected = document.getElementById('siteSelect').value;
+            const data = sitesData[selected];
+
+            map.flyTo(data.coords, 16, { duration: 1.5 });
+            if (currentMarker) map.removeLayer(currentMarker);
+            currentMarker = L.marker(data.coords).addTo(map)
+                .bindPopup(`<b>${data.name}</b><br>Telemetry Active`).openPopup();
+
+            document.getElementById('telemetryHeader').innerText = `📡 NASA/ESA ORBITAL TELEMETRY // ${data.name}`;
+            document.getElementById('valSensor').innerText = data.sensor;
+            document.getElementById('valNdvi').innerText = data.ndvi;
+            document.getElementById('valThermal').innerText = data.thermal;
+            document.getElementById('valChhi').innerText = data.chhi;
+
+            setTimeout(() => {
+                map.invalidateSize();
+            }, 300);
+        }
+
+        function getRashidResponse(userQuery) {
+            if (!userQuery) return "Analyzing telemetry... Current site parameters are within acceptable limits. No immediate structural interventions required.";
+            let query = userQuery.toLowerCase();
+            
+            if (query.includes("chhi") || query.includes("diagnostic") || query.includes("risk") || query.includes("score")) {
+                return "Analyzing telemetry... 📊 [DIAGNOSTIC REPORT] CHHI Score: 78/100 (Moderate Stress).\n• Primary Hazard: Capillary salt dampness in lower masonry boundaries.\n• Moisture Threshold: 14.2% surface moisture detected via spectral bands.\n• Recommendation: Routine desalination & micro-drainage inspection.";
+            }
+            else if (query.includes("5-year") || query.includes("forecast") || query.includes("trajectory") || query.includes("future") || query.includes("simulate") || query.includes("heatwave")) {
+                return "Analyzing telemetry... 🔮 [4D DIGITAL TWIN FORECAST] 2026–2030 Trajectory:\n• Salt Weathering Accumulation: Projected +28% degradation rate by Q4 2028.\n• Climate Stress Index: Micro-climate thermal variance accelerating surface flaking.\n• Proactive Action: Preventative chemical consolidation required within 12 months.";
+            }
+            else if (query.includes("dispatch") || query.includes("action") || query.includes("emergency") || query.includes("team")) {
+                return "Analyzing telemetry... 🚨 [AUTOMATED DISPATCHER] Alert Status: P2 Moderate Risk Triggered.\n• Target GPS: 25.2638° N, 55.2972° E (Al Fahidi Sector B).\n• Action Dispatched: Automated maintenance work-order transmitted to DCT Field Team.";
+            }
+            else if (query.includes("status") || query.includes("verify") || query.includes("check") || query.includes("health")) {
+                return "Analyzing telemetry... ✅ [SYSTEM STATUS] All satellite telemetry links online (PRISMA, InSAR, Sentinel-2).\n• Orbital Pass: Last ingestion 42 mins ago.\n• Overall Condition: Site parameters within operational baselines.";
+            }
+            else {
+                return "Analyzing telemetry... Current site parameters are within acceptable limits. No immediate structural interventions required.";
+            }
+        }
+
+        function sendQuery() {
+            const input = document.getElementById('chatInput');
+            const output = document.getElementById('chatOutput');
+            if (!input.value.trim()) return;
+
+            const queryVal = input.value;
+            output.innerHTML += `<br><span style="color:var(--text-main)">>> USER: ${queryVal}</span>`;
+            input.value = '';
+
+            setTimeout(() => {
+                let responseText = getRashidResponse(queryVal);
+                output.innerHTML += `<br><span style="color:var(--neon-cyan)">>> RASHID AI: ${responseText}</span>`;
+                output.scrollTop = output.scrollHeight;
+            }, 400);
+        }
+
+        function handleKey(e) {
+            if (e.key === 'Enter') sendQuery();
+        }
+    </script>
+</body>
+</html>
