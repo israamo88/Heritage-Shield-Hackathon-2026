@@ -419,14 +419,9 @@
     }
 
     // محاكاة استجابة راشد
-    function sendQuery() {
-        const input = document.getElementById('chatInput');
-        const output = document.getElementById('chatOutput');
-        if(!input.value) return;
-        
-        output.innerHTML += `<br><span style="color:var(--text-main)">> USER: ${input.value}</span>`;
-        input.value = '';
-    function getRashidResponse(userQuery) {
+  // 1. دالة معالجة الردود الذكية لراشد
+function getRashidResponse(userQuery) {
+    if (!userQuery) return "Analyzing telemetry... Current site parameters are within acceptable limits. No immediate structural interventions required.";
     let query = userQuery.toLowerCase();
     
     if (query.includes("chhi") || query.includes("diagnostic") || query.includes("risk") || query.includes("score")) {
@@ -444,6 +439,26 @@
     else {
         return "Analyzing telemetry... Current site parameters are within acceptable limits. No immediate structural interventions required.";
     }
+}
+
+// 2. دالة محاكاة استجابة راشد عند إرسال السؤال
+function sendQuery() {
+    const input = document.getElementById('chatInput');
+    const output = document.getElementById('chatOutput');
+    if (!input.value) return;
+
+    // حفظ النص قبل التفريغ
+    const queryVal = input.value;
+
+    output.innerHTML += `<br><span style="color:var(--text-main)">>> USER: ${queryVal}</span>`;
+    input.value = '';
+
+    setTimeout(() => {
+        // استدعاء الدالة وحفظ الرد
+        let responseText = getRashidResponse(queryVal);
+        output.innerHTML += `<br><span style="color:var(--neon-cyan)">>> RASHID AI: ${responseText}</span>`;
+        output.scrollTop = output.scrollHeight;
+    }, 500);
 }
     }
 </script>
