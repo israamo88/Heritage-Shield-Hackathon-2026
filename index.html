@@ -8,12 +8,12 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         :root {
-            --bg-dark: #070c14;
-            --panel-bg: #0d1522;
-            --border-color: #1e2d42;
+            --bg-dark: #050a10;
+            --panel-bg: #09111e;
+            --border-color: #17263c;
             --neon-cyan: #00ffcc;
             --text-main: #e2e8f0;
-            --text-sub: #94a3b8;
+            --text-sub: #8295ac;
         }
 
         body {
@@ -60,13 +60,14 @@
         }
 
         select {
-            background: #070d14;
+            background: #04080f;
             color: var(--neon-cyan);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--neon-cyan);
             padding: 8px 12px;
             border-radius: 4px;
             font-size: 14px;
             cursor: pointer;
+            font-family: monospace;
         }
 
         #map {
@@ -78,9 +79,9 @@
             z-index: 1;
         }
 
-        .telemetry-panel {
+        .telemetry-panel, .section-panel {
             background: var(--panel-bg);
-            border: 1px solid var(--neon-cyan);
+            border: 1px solid var(--border-color);
             border-radius: 6px;
             padding: 15px;
             margin-bottom: 15px;
@@ -102,7 +103,7 @@
         }
 
         .metric-card {
-            background: #070d14;
+            background: #04080e;
             border: 1px solid var(--border-color);
             padding: 12px;
             border-radius: 4px;
@@ -128,21 +129,46 @@
             border-radius: 6px;
             padding: 15px;
             font-family: 'Courier New', Courier, monospace;
+            margin-bottom: 15px;
+        }
+
+        .terminal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
         }
 
         .terminal-title {
             color: var(--neon-cyan);
             font-size: 14px;
-            margin-bottom: 10px;
             font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--neon-cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--neon-cyan);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.3; }
+            50% { opacity: 1; }
+            100% { opacity: 0.3; }
         }
 
         .terminal-output {
-            background: #04080e;
+            background: #03060a;
             border: 1px solid var(--border-color);
             height: 140px;
             overflow-y: auto;
-            padding: 10px;
+            padding: 12px;
             font-size: 13px;
             line-height: 1.5;
             margin-bottom: 10px;
@@ -157,7 +183,7 @@
 
         .terminal-input-container input {
             flex: 1;
-            background: #04080e;
+            background: #03060a;
             border: 1px solid var(--border-color);
             color: var(--neon-cyan);
             padding: 10px;
@@ -169,7 +195,7 @@
             background: transparent;
             color: var(--neon-cyan);
             border: 1px solid var(--neon-cyan);
-            padding: 0 20px;
+            padding: 0 22px;
             font-family: monospace;
             font-weight: bold;
             cursor: pointer;
@@ -180,6 +206,38 @@
         .terminal-input-container button:hover {
             background: var(--neon-cyan);
             color: #000;
+        }
+
+        /* Tables Formatting */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+
+        .data-table th, .data-table td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table th {
+            color: var(--neon-cyan);
+            font-family: monospace;
+            font-weight: bold;
+            background: #04080e;
+        }
+
+        .section-title {
+            color: var(--neon-cyan);
+            font-family: monospace;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
     </style>
 </head>
@@ -199,13 +257,14 @@
         </select>
     </div>
 
-    <!-- Leaflet Map Box -->
+    <!-- Leaflet Satellite Map -->
     <div id="map"></div>
 
+    <!-- Telemetry Metrics Bar -->
     <div class="telemetry-panel">
         <div class="telemetry-title">
             <span id="telemetryHeader">📡 NASA/ESA ORBITAL TELEMETRY // 🌴 Al Ain Oasis</span>
-            <span style="color: #00ffcc; font-size: 12px;">LIVE SYNC</span>
+            <span style="color: var(--neon-cyan); font-size: 12px;">LIVE SYNC</span>
         </div>
         <div class="metrics-grid">
             <div class="metric-card">
@@ -218,130 +277,4 @@
             </div>
             <div class="metric-card">
                 <div class="label">Thermal / Moisture</div>
-                <div class="value" id="valThermal">28.4% (Sub-surface Irrigation)</div>
-            </div>
-            <div class="metric-card">
-                <div class="label">CHHI Score</div>
-                <div class="value" id="valChhi" style="color:#00ffcc;">82.4 / 100</div>
-            </div>
-        </div>
-    </div>
-
-    <div class="terminal-panel">
-        <div class="terminal-title">🤖 AI Commander // Rashed (NASA Voice)</div>
-        <div class="terminal-output" id="chatOutput">[SYSTEM READY] Orbital telemetry linked. Awaiting query regarding heritage site status...</div>
-        <div class="terminal-input-container">
-            <input type="text" id="chatInput" placeholder="Enter query for AI Commander Rashed..." onkeypress="handleKey(event)">
-            <button onclick="sendQuery()">TRANSMIT</button>
-        </div>
-    </div>
-
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script>
-        // بيانات المواقع
-        const sitesData = {
-            al_ain: {
-                name: "🌴 Al Ain Oasis",
-                coords: [24.2185, 55.7625],
-                sensor: "Sentinel-2 MSI (Optical & NIR)",
-                ndvi: "0.68 (Healthy Palm Canopy)",
-                thermal: "28.4% (Sub-surface Irrigation)",
-                chhi: "82.4 / 100"
-            },
-            al_fahidi: {
-                name: "🏰 Al Fahidi Historical District",
-                coords: [25.2638, 55.2972],
-                sensor: "PRISMA Hyperspectral / InSAR",
-                ndvi: "14.2% Surface Dampness",
-                thermal: "41.8°C Thermal Stress",
-                chhi: "78.0 / 100"
-            },
-            qasr_al_hosn: {
-                name: "🏛️ Qasr Al Hosn",
-                coords: [24.4822, 54.3548],
-                sensor: "DESIS Hyperspectral Stream",
-                ndvi: "0.12 Structural Shift Rate",
-                thermal: "34.1°C Baseline Temp",
-                chhi: "91.2 / 100"
-            }
-        };
-
-        // تهيئة الخريطة
-        const map = L.map('map').setView(sitesData.al_ain.coords, 16);
-
-        // إضافة طبقة الخريطة الفضائية (Esri World Imagery)
-        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
-        }).addTo(map);
-
-        let currentMarker = L.marker(sitesData.al_ain.coords).addTo(map)
-            .bindPopup("<b>Al Ain Oasis</b><br>Heritage Telemetry Active").openPopup();
-
-        // التبديل بين المواقع
-        function changeSite() {
-            const selected = document.getElementById('siteSelect').value;
-            const data = sitesData[selected];
-
-            map.flyTo(data.coords, 16);
-            if (currentMarker) map.removeLayer(currentMarker);
-            currentMarker = L.marker(data.coords).addTo(map)
-                .bindPopup(`<b>${data.name}</b><br>Telemetry Active`).openPopup();
-
-            document.getElementById('telemetryHeader').innerText = `📡 NASA/ESA ORBITAL TELEMETRY // ${data.name}`;
-            document.getElementById('valSensor').innerText = data.sensor;
-            document.getElementById('valNdvi').innerText = data.ndvi;
-            document.getElementById('valThermal').innerText = data.thermal;
-            document.getElementById('valChhi').innerText = data.chhi;
-        }
-
-        // إجابة راشد الذكية
-        function getRashidResponse(userQuery) {
-            if (!userQuery) return "Analyzing telemetry... Current site parameters are within acceptable limits. No immediate structural interventions required.";
-            let query = userQuery.toLowerCase();
-            
-            if (query.includes("chhi") || query.includes("diagnostic") || query.includes("risk") || query.includes("score")) {
-                return "Analyzing telemetry... 📊 [DIAGNOSTIC REPORT] CHHI Score: 78/100 (Moderate Stress).\n• Primary Hazard: Capillary salt dampness in lower masonry boundaries.\n• Moisture Threshold: 14.2% surface moisture detected via spectral bands.\n• Recommendation: Routine desalination & micro-drainage inspection.";
-            }
-            else if (query.includes("5-year") || query.includes("forecast") || query.includes("trajectory") || query.includes("future") || query.includes("simulate") || query.includes("heatwave")) {
-                return "Analyzing telemetry... 🔮 [4D DIGITAL TWIN FORECAST] 2026–2030 Trajectory:\n• Salt Weathering Accumulation: Projected +28% degradation rate by Q4 2028.\n• Climate Stress Index: Micro-climate thermal variance accelerating surface flaking.\n• Proactive Action: Preventative chemical consolidation required within 12 months.";
-            }
-            else if (query.includes("dispatch") || query.includes("action") || query.includes("emergency") || query.includes("team")) {
-                return "Analyzing telemetry... 🚨 [AUTOMATED DISPATCHER] Alert Status: P2 Moderate Risk Triggered.\n• Target GPS: 25.2638° N, 55.2972° E (Al Fahidi Sector B).\n• Action Dispatched: Automated maintenance work-order transmitted to DCT Field Team.";
-            }
-            else if (query.includes("status") || query.includes("verify") || query.includes("check") || query.includes("health")) {
-                return "Analyzing telemetry... ✅ [SYSTEM STATUS] All satellite telemetry links online (PRISMA, InSAR, Sentinel-2).\n• Orbital Pass: Last ingestion 42 mins ago.\n• Overall Condition: Site parameters within operational baselines.";
-            }
-            else {
-                return "Analyzing telemetry... Current site parameters are within acceptable limits. No immediate structural interventions required.";
-            }
-        }
-
-        // إرسال السؤال عبر راشد
-        function sendQuery() {
-            const input = document.getElementById('chatInput');
-            const output = document.getElementById('chatOutput');
-            if (!input.value.trim()) return;
-
-            const queryVal = input.value;
-            output.innerHTML += `<br><span style="color:var(--text-main)">>> USER: ${queryVal}</span>`;
-            input.value = '';
-
-            setTimeout(() => {
-                let responseText = getRashidResponse(queryVal);
-                output.innerHTML += `<br><span style="color:var(--neon-cyan)">>> RASHID AI: ${responseText}</span>`;
-                output.scrollTop = output.scrollHeight;
-            }, 400);
-        }
-
-        function handleKey(e) {
-            if (e.key === 'Enter') sendQuery();
-        }
-
-        // إجبار الخريطة على ضبط أبعادها فور التحميل
-        setTimeout(() => {
-            map.invalidateSize();
-        }, 500);
-    </script>
-</body>
-</html>
+                <div class="value" id="valThermal">28.
