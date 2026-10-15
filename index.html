@@ -426,11 +426,25 @@
         
         output.innerHTML += `<br><span style="color:var(--text-main)">> USER: ${input.value}</span>`;
         input.value = '';
-        
-        setTimeout(() => {
-            output.innerHTML += `<br><span style="color:var(--neon-cyan)">> RASHID AI: Analyzing telemetry... Current site parameters are within acceptable limits. No immediate structural interventions required.</span>`;
-            output.scrollTop = output.scrollHeight;
-        }, 1000);
+    function getRashidResponse(userQuery) {
+    let query = userQuery.toLowerCase();
+    
+    if (query.includes("chhi") || query.includes("diagnostic") || query.includes("risk") || query.includes("score")) {
+        return "Analyzing telemetry... 📊 [DIAGNOSTIC REPORT] CHHI Score: 78/100 (Moderate Stress).\n• Primary Hazard: Capillary salt dampness in lower masonry boundaries.\n• Moisture Threshold: 14.2% surface moisture detected via spectral bands.\n• Recommendation: Routine desalination & micro-drainage inspection.";
+    }
+    else if (query.includes("5-year") || query.includes("forecast") || query.includes("trajectory") || query.includes("future") || query.includes("simulate") || query.includes("heatwave")) {
+        return "Analyzing telemetry... 🔮 [4D DIGITAL TWIN FORECAST] 2026–2030 Trajectory:\n• Salt Weathering Accumulation: Projected +28% degradation rate by Q4 2028.\n• Climate Stress Index: Micro-climate thermal variance accelerating surface flaking.\n• Proactive Action: Preventative chemical consolidation required within 12 months.";
+    }
+    else if (query.includes("dispatch") || query.includes("action") || query.includes("emergency") || query.includes("team")) {
+        return "Analyzing telemetry... 🚨 [AUTOMATED DISPATCHER] Alert Status: P2 Moderate Risk Triggered.\n• Target GPS: 25.2638° N, 55.2972° E (Al Fahidi Sector B).\n• Action Dispatched: Automated maintenance work-order transmitted to DCT Field Team.";
+    }
+    else if (query.includes("status") || query.includes("verify") || query.includes("check") || query.includes("health")) {
+        return "Analyzing telemetry... ✅ [SYSTEM STATUS] All satellite telemetry links online (PRISMA, InSAR, Sentinel-2).\n• Orbital Pass: Last ingestion 42 mins ago.\n• Overall Condition: Site parameters within operational baselines.";
+    }
+    else {
+        return "Analyzing telemetry... Current site parameters are within acceptable limits. No immediate structural interventions required.";
+    }
+}
     }
 </script>
 
