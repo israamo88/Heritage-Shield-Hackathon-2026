@@ -69,19 +69,19 @@
             font-size: 14px;
             cursor: pointer;
             font-family: monospace;
-            box-shadow: 0 0 5px rgba(0, 255, 204, 0.2);
         }
 
         #map {
-            height: 420px;
-            width: 100%;
+            height: 400px !important;
+            width: 100% !important;
             border-radius: 6px;
             border: 1px solid var(--border-color);
             margin-bottom: 15px;
+            position: relative;
             z-index: 1;
         }
 
-        .telemetry-panel, .section-panel {
+        .telemetry-panel, .section-panel, .terminal-panel {
             background: var(--panel-bg);
             border: 1px solid var(--border-color);
             border-radius: 6px;
@@ -125,15 +125,6 @@
             color: var(--neon-cyan);
         }
 
-        .terminal-panel {
-            background: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 15px;
-            font-family: 'Courier New', Courier, monospace;
-            margin-bottom: 15px;
-        }
-
         .terminal-header {
             display: flex;
             align-items: center;
@@ -148,6 +139,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            font-family: monospace;
         }
 
         .status-dot {
@@ -156,19 +148,12 @@
             background-color: var(--neon-cyan);
             border-radius: 50%;
             box-shadow: 0 0 8px var(--neon-cyan);
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 0.3; }
-            50% { opacity: 1; }
-            100% { opacity: 0.3; }
         }
 
         .terminal-output {
             background: #03060a;
             border: 1px solid var(--border-color);
-            height: 140px;
+            height: 130px;
             overflow-y: auto;
             padding: 12px;
             font-size: 13px;
@@ -176,6 +161,7 @@
             margin-bottom: 10px;
             border-radius: 4px;
             white-space: pre-wrap;
+            font-family: 'Courier New', Courier, monospace;
         }
 
         .terminal-input-container {
@@ -202,7 +188,6 @@
             font-weight: bold;
             cursor: pointer;
             border-radius: 4px;
-            transition: 0.2s;
         }
 
         .terminal-input-container button:hover {
@@ -236,9 +221,6 @@
             font-size: 14px;
             font-weight: bold;
             margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
     </style>
 </head>
@@ -303,36 +285,40 @@
         </div>
     </div>
 
-    <!-- Target UAE Heritage Sites Table -->
+    <!-- Target Landmarks & Risk Metrics Table -->
     <div class="section-panel">
-        <div class="section-title">🏛️ TARGET UAE HERITAGE SITES (NATIONWIDE)</div>
+        <div class="section-title">📊 03. Target Landmarks & Risk Metrics</div>
         <table class="data-table">
             <thead>
                 <tr>
                     <th>Heritage Site</th>
                     <th>Emirate</th>
-                    <th>Risk Factor</th>
-                    <th>Status</th>
+                    <th>Primary Vulnerability</th>
+                    <th>CHHI Risk Score</th>
+                    <th>B2G Status</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td>Al Ain Oasis</td>
                     <td>Abu Dhabi</td>
-                    <td>1.2% (Irrigation)</td>
-                    <td style="color: var(--neon-cyan);">STABLE</td>
+                    <td>Sub-surface Salinity & Irrigation Stress</td>
+                    <td style="color: var(--neon-cyan);">84.2 / 100</td>
+                    <td>High Risk - Immediate Intervention</td>
                 </tr>
                 <tr>
                     <td>Al Fahidi District</td>
                     <td>Dubai</td>
-                    <td>4.5% (Humidity)</td>
-                    <td style="color: #ffaa00;">MONITORING</td>
+                    <td>Marine Aerosol & Rising Dampness</td>
+                    <td style="color: #ffaa00;">62.1 / 100</td>
+                    <td>Moderate Risk - Monitoring Required</td>
                 </tr>
                 <tr>
                     <td>Qasr Al Hosn</td>
                     <td>Abu Dhabi</td>
-                    <td>0.8% (Structural)</td>
-                    <td style="color: var(--neon-cyan);">SECURE</td>
+                    <td>Urban Micro-displacement & Foundation Stress</td>
+                    <td style="color: var(--neon-cyan);">45.8 / 100</td>
+                    <td>Stable - Routine Maintenance</td>
                 </tr>
             </tbody>
         </table>
@@ -340,30 +326,30 @@
 
     <!-- Economic & Financial Feasibility Table -->
     <div class="section-panel">
-        <div class="section-title">💰 ECONOMIC & FINANCIAL FEASIBILITY</div>
+        <div class="section-title">💰 04. Economic & Financial Feasibility</div>
         <table class="data-table">
             <thead>
                 <tr>
                     <th>Financial Metric</th>
                     <th>Projected Value</th>
-                    <th>Impact</th>
+                    <th>Impact / Scalability</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td>Maintenance Cost Reduction</td>
                     <td>-30% Annually</td>
-                    <td>High Savings</td>
+                    <td>High Municipal Savings</td>
                 </tr>
                 <tr>
                     <td>Startup Recurring Revenue</td>
-                    <td>1.2M AED / Year</td>
-                    <td>B2G Scalable</td>
+                    <td>12M AED / Year</td>
+                    <td>B2G Scalable SaaS Model</td>
                 </tr>
                 <tr>
                     <td>Asset Valuation ROI</td>
                     <td>3.8x Return</td>
-                    <td>Profitable</td>
+                    <td>High Long-term Value Protection</td>
                 </tr>
             </tbody>
         </table>
@@ -379,47 +365,38 @@
                 sensor: "Sentinel-2 MSI (Optical & NIR)",
                 ndvi: "0.68 (Healthy Palm Canopy)",
                 thermal: "28.4% (Sub-surface Irrigation)",
-                chhi: "82.4 / 100"
+                chhi: "84.2 / 100"
             },
             al_fahidi: {
                 name: "🏰 Al Fahidi Historical District",
                 coords: [25.2638, 55.2972],
                 sensor: "PRISMA Hyperspectral / InSAR",
-                ndvi: "14.2% Surface Dampness",
+                ndvi: "62.1 Risk Score",
                 thermal: "41.8°C Thermal Stress",
-                chhi: "78.0 / 100"
+                chhi: "62.1 / 100"
             },
             qasr_al_hosn: {
                 name: "🏛️ Qasr Al Hosn",
                 coords: [24.4822, 54.3548],
                 sensor: "DESIS Hyperspectral Stream",
-                ndvi: "0.12 Structural Shift Rate",
+                ndvi: "45.8 Risk Score",
                 thermal: "34.1°C Baseline Temp",
-                chhi: "91.2 / 100"
+                chhi: "45.8 / 100"
             }
         };
 
-        let map;
-        let currentMarker;
+        let map = L.map('map').setView(sitesData.al_ain.coords, 16);
 
-        function initMap() {
-            map = L.map('map').setView(sitesData.al_ain.coords, 16);
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri'
+        }).addTo(map);
 
-            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-                attribution: 'Tiles &copy; Esri'
-            }).addTo(map);
+        let currentMarker = L.marker(sitesData.al_ain.coords).addTo(map)
+            .bindPopup("<b>Al Ain Oasis</b><br>Heritage Telemetry Active").openPopup();
 
-            currentMarker = L.marker(sitesData.al_ain.coords).addTo(map)
-                .bindPopup("<b>Al Ain Oasis</b><br>Heritage Telemetry Active").openPopup();
-
-            setTimeout(() => {
-                map.invalidateSize();
-            }, 400);
-        }
-
-        window.onload = function() {
-            initMap();
-        };
+        setTimeout(() => {
+            map.invalidateSize();
+        }, 200);
 
         function changeSite() {
             const selected = document.getElementById('siteSelect').value;
